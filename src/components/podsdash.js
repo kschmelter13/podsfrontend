@@ -1,12 +1,15 @@
 import React from 'react'
 import { useState } from 'react'
-import { Card, Grid } from 'react-bootstrap'
+import { Card, Grid, Button } from 'react-bootstrap'
 import Bankpod from './bankpod'
 
 export default function Podsdash() {
     const [bankPods, setPods] = useState([])
     const [showModal, setModal] = useState(false)
     
+    function addBank() {
+
+    }
     
 
     
@@ -16,8 +19,11 @@ export default function Podsdash() {
                 className="bg-white text-black"
                 style={{ height: '100%'}}
             >
+                <div className="button-container" style={{ height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <Button variant="primary" onClick={addBank()}>Add BankPod</Button>
+                </div>
                 <Card.Body>
-                    <Bankpod></Bankpod>
+                    {bankPods.length < 1 ? <p>No BankPods found</p> : bankPods.map(() => <Bankpod/>)}
                 </Card.Body>
             </Card>
         </div>
