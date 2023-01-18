@@ -1,12 +1,13 @@
 import React from 'react'
+import { Col } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 
 
 export default function Bankpod() {
   return (
-    <Card style={{ width: '18rem' }}>
-      <Card.Img variant="top" src="holder.js/100px180?text=Image cap" />
+    <Col xs={3} className="mx-auto" style={{ height: '70%',  minWidth: '300px', maxWidth: '325px'}}>
+      <Card style={{ width: '100%'}}>
       <Card.Body>
         <Card.Title>Card Title</Card.Title>
         <Card.Text>
@@ -23,7 +24,8 @@ export default function Bankpod() {
         <Card.Link href="#">Card Link</Card.Link>
         <Card.Link href="#">Another Link</Card.Link>
       </Card.Body>
-    </Card>
+      </Card>
+    </Col>
   );
 }
 ;

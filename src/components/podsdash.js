@@ -25,7 +25,8 @@ export default function Podsdash() {
                 <div className="button-container" style={{ height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     <Button variant="primary" onClick={() => setModal(true)}>Add Bankpod</Button>
                 </div>
-                <Card.Body>
+        
+                <Card.Body className="m-auto justify-content-center align-items-center"f>
                     <Modal show={showModal} onHide={() => setModal(false)}>
                         <Modal.Header closeButton>
                             <Modal.Title>Add Bankpod</Modal.Title>
@@ -42,7 +43,7 @@ export default function Podsdash() {
                             </Form>
                         </Modal.Body>
                     </Modal>
-                    <Row className="m-auto justify-content-center align-items-center" fluid style={{ height: '100%'}}>
+                    <Row  className="m-auto justify-content-center align-items-center " fluid style={{ height: '100%'}}>
                         <Col xs={12} style={{ height: '100%'}}>
                             <Row className='p-1' style={{ height: '100%'}}>
                                 {bankPods.length < 1 ? <p>No BankPods found</p> : bankPods.map(() => <Bankpod/>)}
