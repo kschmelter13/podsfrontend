@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
-import { Card, Grid, Button, Modal, Form} from 'react-bootstrap'
+import { Card, Grid, Button, Modal, Form, Container, Row, Col} from 'react-bootstrap'
 import Bankpod from './bankpod'
 
 export default function Podsdash() {
@@ -20,11 +20,8 @@ export default function Podsdash() {
 
     
     return (
-        <div style={{ height: '93vh' , paddingLeft: '2%', paddingRight: '2%', paddingTop: '1%', paddingBottom: '1%'}}>
-            <Card
-                className="bg-white text-black"
-                style={{ height: '100%'}}
-            >
+        <Container className='p-3' fluid style={{height: '100%',}}>
+            <Card style={{ height: '100%',  minHeight: '87.8vh' }}>
                 <div className="button-container" style={{ height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     <Button variant="primary" onClick={() => setModal(true)}>Add Bankpod</Button>
                 </div>
@@ -45,10 +42,15 @@ export default function Podsdash() {
                             </Form>
                         </Modal.Body>
                     </Modal>
-                    {bankPods.length < 1 ? <p>No BankPods found</p> : bankPods.map(() => <Bankpod/>)}
+                    <Row className="m-auto justify-content-center align-items-center" fluid style={{ height: '100%'}}>
+                        <Col xs={12} style={{ height: '100%'}}>
+                            <Row className='p-1' style={{ height: '100%'}}>
+                                {bankPods.length < 1 ? <p>No BankPods found</p> : bankPods.map(() => <Bankpod/>)}
+                            </Row>
+                        </Col>
+                    </Row>
                 </Card.Body>
             </Card>
-        </div>
-        
+        </Container>   
     )
 }
