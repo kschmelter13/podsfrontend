@@ -7,7 +7,7 @@ export default function Header() {
   return (
     <Navbar bg="dark" variant="dark" style={{height: '7vh'}}>
         <Container style={{margin: 6, width: '200pxvw'}}>
-          <Navbar.Brand href="/" style={{fontSize: '1.7vw'}}>Pods</Navbar.Brand >
+          <Navbar.Brand href="/" style={{fontSize: 'calc(20px + 0.5vw)'}}>Pods</Navbar.Brand >
           <Nav className="me-auto">
           </Nav>
         </Container>

@@ -9,7 +9,7 @@ function capitalize(string) {
 
 export default function Bankpod(props) {
   return (
-    <Col xs={3} className="mx-auto pb-2" style={{ height: '100%', minWidth: '300px', maxWidth: '325px'}}>
+    <Col xs={3} className="mx-auto pb-4" style={{ height: '100%', minWidth: '300px', maxWidth: '325px'}}>
       <Card style={{ width: '100%'}}>
       <Card.Body>
         <Card.Title>{capitalize(props.BankName)}</Card.Title>
