@@ -30,7 +30,7 @@ export default function App() {
     
     <div className="App">
       <Router>
-        <div className='container'>
+        <div>
           <Header></Header>
           <Routes>
             <Route path='/' element={<Podsdash/>}/>
