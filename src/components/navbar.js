@@ -3,7 +3,7 @@ import { Navbar} from 'react-bootstrap';
 import { Nav } from 'react-bootstrap';
 import {Container} from 'react-bootstrap';
 
-export default function Navigation() {
+export default function Header() {
   return (
     <Navbar bg="dark" variant="dark" style={{height: '7vh'}}>
         <Container style={{margin: 6, width: '200pxvw'}}>
