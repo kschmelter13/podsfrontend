@@ -16,7 +16,7 @@ export default function Podsdash() {
     const handleSubmit = (event) => {
         event.preventDefault();
         addBankpod({name: bankName, money: 0});
-        setBankName('');
+        setBankName(''); 
         setModal(false);
     }
 
