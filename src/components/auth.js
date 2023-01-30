@@ -1,8 +1,7 @@
-import React from 'react'
 import { useRef, useState } from "react";
 import { supabase } from "../lib/api";
 
-const Login = (handleUser) => {
+const Auth = () => {
     const [helperText, setHelperText] = useState({ error: null, text: null });
     const emailRef = useRef();
     const passwordRef = useRef();
@@ -13,7 +12,7 @@ const Login = (handleUser) => {
 
         const { user, error } =
             type === "LOGIN"
-                ? await supabase.auth.signInWithPassword({ email, password })
+                ? await supabase.auth.signIn({ email, password })
                 : await supabase.auth.signUp({ email, password });
 
         if (error) {
@@ -23,8 +22,6 @@ const Login = (handleUser) => {
                 error: false,
                 text: "An email has been sent to you for verification!",
             });
-        }else if (user){
-            handleUser(user)
         }
     };
 
@@ -181,4 +178,4 @@ const Login = (handleUser) => {
     );
 };
 
-export default Login;
+export default Auth;
