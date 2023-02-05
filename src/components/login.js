@@ -101,7 +101,7 @@ const Login = ({handleUser, user}) => {
                             ></Form.Group>
                             <div className="d-grid">
                             <div className="button-container" style={{ height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                <Button variant="primary" style={{ marginRight: '20px' }} type="button" onClick={() =>handleLogin("REGISTER").catch(console.error)}>{loadingSignup ? "Logging In..." : "Login Account"}</Button>
+                                <Button variant="primary" style={{ marginRight: '20px' }} type="button" onClick={() =>handleLogin("REGISTER").catch(console.error)}>{loadingSignup ? "Signing Up..." : "Create Account"}</Button>
                                 or
                                 <Button variant="primary" style={{ marginLeft: '20px' }} type="button" onClick={() =>handleLogin("LOGIN").catch(console.error)}>{loadingLogin ? "Logging In..." : "Login Account"}</Button>
                             </div>
