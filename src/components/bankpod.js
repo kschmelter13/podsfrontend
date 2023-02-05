@@ -3,11 +3,12 @@ import { Col } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 
-function capitalize(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
 export default function Bankpod(props) {
+  
+  function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }  
+
   return (
     <Col xs={3} className="mx-auto pb-4" style={{ height: '100%', minWidth: '300px', maxWidth: '325px'}}>
       <Card style={{ width: '100%'}}>
