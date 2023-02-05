@@ -27,7 +27,7 @@ export default function App() {
     <div className='App'>
       <div >
         <Header></Header>
-        <div style={{marginTop: '8vh'}}>
+        <div style={{marginTop: 'calc(30px + 3.9vh)'}}>
           {!user ? <Auth /> : <Podsdash user={user} />}
         </div>
       </div>

@@ -7,12 +7,16 @@ import { supabase } from "../lib/api";
 
 const Login = ({handleUser, user}) => {
     const [helperText, setHelperText] = useState({ error: null, text: null });
+    const [loadingLogin, setLoadingLogin] = useState(false);
+    const [loadingSignup, setLoadingSignup] = useState(false);
     const emailRef = useRef();
     const passwordRef = useRef();
 
     const handleLogin = async (type) => {
         const email = emailRef.current?.value;
         const password = passwordRef.current?.value;
+        
+        type === "LOGIN" ? setLoadingLogin(true) : setLoadingSignup(true)
 
         const { user, error } =
             type === "LOGIN"
@@ -27,6 +31,8 @@ const Login = ({handleUser, user}) => {
                 text: "An email has been sent to you for verification!",
             });
         }
+
+        type === "LOGIN" ? setLoadingLogin(false) : setLoadingSignup(false)
     };
 
     const handleOAuthLogin = async (provider) => {
@@ -95,9 +101,9 @@ const Login = ({handleUser, user}) => {
                             ></Form.Group>
                             <div className="d-grid">
                             <div className="button-container" style={{ height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                <Button variant="primary" style={{ marginRight: '20px' }} type="button" onClick={() =>handleLogin("REGISTER").catch(console.error)}>Create Account</Button>
+                                <Button variant="primary" style={{ marginRight: '20px' }} type="button" onClick={() =>handleLogin("REGISTER").catch(console.error)}>{loadingSignup ? "Logging In..." : "Login Account"}</Button>
                                 or
-                                <Button variant="primary" style={{ marginLeft: '20px' }} type="button" onClick={() =>handleLogin("LOGIN").catch(console.error)}>Login Account</Button>
+                                <Button variant="primary" style={{ marginLeft: '20px' }} type="button" onClick={() =>handleLogin("LOGIN").catch(console.error)}>{loadingLogin ? "Logging In..." : "Login Account"}</Button>
                             </div>
                             </div>
                         </Form>
