@@ -8,8 +8,13 @@ import { margin } from '@mui/system';
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (loading === false){
+      setLoading(true)
+    }
+
     const getSes = async () => {
       const { data, error } = await supabase.auth.getSession()
       setUser(data.session.user)
@@ -21,15 +26,19 @@ export default function App() {
             setUser(currentUser ?? null);
         }
     );
+    setLoading(false)
   }, []);
 
   return (
     <div className='App'>
       <div >
         <Header></Header>
-        <div style={{marginTop: 'calc(30px + 3.9vh)'}}>
-          {!user ? <Auth /> : <Podsdash user={user} />}
-        </div>
+        {loading 
+          ? <h1>Loading...</h1>
+          : <div style={{marginTop: 'calc(30px + 3.9vh)'}}>
+              {!user ? <Auth /> : <Podsdash user={user} />}
+            </div>
+        }
       </div>
     </div>
   );
