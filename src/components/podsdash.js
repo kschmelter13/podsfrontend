@@ -1,16 +1,16 @@
 import React from 'react'
 import { useState, useRef, useEffect } from 'react'
-import { Card, Button, Modal, Form, Container, Row, Col} from 'react-bootstrap'
+import { Card, Button, Modal, Form, Container, Row, Col, Spinner} from 'react-bootstrap'
 import Bankpod from './bankpod'
 import RecoverPassword from "./recovery";
 import { supabase } from '../lib/api'
 
 export default function Podsdash({user}) {
     const [bankPods, setPods] = useState([])
-    const [loading, setLoading] = useState(true);
     const [showModal, setModal] = useState(false)
     const [bankName, setBankName] = useState('')
     const [recoveryToken, setRecoveryToken] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         /* Recovery url is of the form
@@ -32,33 +32,27 @@ export default function Podsdash({user}) {
     }, []);
 
     useEffect(() => {
-        if (!loading){
-            setLoading(true)
-          }
         const fetchData = async () => {
             // Fetch the bankpods and subpods data
             const { data, error } = await supabase
             .from('BankPods')
             .select()
             .eq('user_id', user.id)
-
-            let ndata = data
-            
+            .order('created_at', { ascending: true })
             setPods(data);
+            if (bankPods.length == 0){
+                setLoading(false)
+            }
         };
+        
         fetchData();
-        setLoading(false)
-    }, []);
-
-    const addBankpod = (newPod) => {
-      setPods([...bankPods, newPod])
-    }
+    }, [user]);
 
     const handleLogout = async () => {
         supabase.auth.signOut().catch(console.error);
     };
 
-    const handleSubmit = async (event) => {
+    const addBankpod = async (event) => {
         event.preventDefault();
         const { data, error } = await supabase
         .from('BankPods')
@@ -69,22 +63,14 @@ export default function Podsdash({user}) {
         console.error('Error inserting bankpod: ', error);
         } else {
         console.log('Successfully inserted bankpod: ', data);
-        addBankpod(data[0])
+        setPods([...bankPods, data[0]])
         }
 
         setBankName(''); 
         setModal(false);
     }
 
-    const deletePod = async (podId) => {
-        const { data, error } = await supabase.from('BankPods').delete().eq('id', podId);
-        if (error) {
-          console.error('Error deleting bankpod: ', error);
-        } else {
-          console.log('Successfully deleted bankpod: ', data);
-          setPods(bankPods.filter(pod => pod.id !== podId))
-        }
-    }
+    
 
     
     return recoveryToken ? (
@@ -93,46 +79,45 @@ export default function Podsdash({user}) {
             setRecoveryToken={setRecoveryToken}
         />
     ) : (
-        <div>
-            {loading 
-            ? <h1>Loading...</h1>
-            : <Container className='p-3' fluid style={{height: '100%',}}>
-                <Card style={{ height: '100%',  minHeight: 'calc(96vh - 61px)' }}>
-                    <div className="button-container" style={{ height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Button variant="primary" onClick={() => setModal(true)}>Add Bankpod</Button>
-                        <Button variant="primary" onClick={handleLogout}>Log Out</Button>
-                    </div>
-            
-                    <Card.Body className="mx-auto justify-content-center align-items-center"f>
-                        <Modal show={showModal} onHide={() => setModal(false)}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Add Bankpod</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form onSubmit={handleSubmit}>
-                                    <Form.Group>
-                                        <Form.Label>Bank Name</Form.Label>
-                                        <Form.Control type="text" value={bankName} onChange={(event) => setBankName(event.target.value)} placeholder="Enter bank name" required/>
-                                    </Form.Group>
-                                    <div style={{marginTop: '15px'}}>
-                                        <Button variant="primary" type="submit" >
-                                            Add
-                                        </Button>
-                                    </div>
-                                </Form>
-                            </Modal.Body>
-                        </Modal>
-                        <Row  className="m-auto justify-content-center align-items-center " fluid style={{ height: '100%'}}>
-                            <Col xs={12} style={{ height: '100%'}}>
-                                <Row style={{height: '100%'}}>
-                                    {bankPods.length < 1 ? <p>No BankPods found</p> : bankPods.map((pod) => <Bankpod props={pod} deletePod={deletePod}/>)}
-                                </Row>
-                            </Col>
-                        </Row>
-                    </Card.Body>
-                </Card>
-            </Container>
-        }
-        </div>   
+        <Container className='p-3' fluid style={{height: '100%',}}>
+            <Card style={{ height: '100%',  minHeight: 'calc(96vh - 61px)' }}>
+                <div className="button-container" style={{ height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <Button variant="primary" onClick={() => setModal(true)}>Add Bankpod</Button>
+                    <Button variant="primary" onClick={handleLogout}>Log Out</Button>
+                </div>
+        
+                <Card.Body className="mx-auto justify-content-center align-items-center"f>
+                    <Row  className="m-auto justify-content-center align-items-center " fluid style={{ height: '100%'}}>
+                        <Col xs={12} style={{ height: '100%'}}>
+                            <Row style={{height: '100%'}}>
+                                
+                            {loading ? <Spinner animation="border" /> 
+                            : ( bankPods.length > 0 ? bankPods.map((bankPod) => <Bankpod setLoading={setLoading} bankPod={bankPod} pods={bankPods} setPods={setPods}/>):
+                                <div>No Bankpods Found</div> 
+                            )}
+                            </Row>
+                        </Col>
+                    </Row>
+                    <Modal show={showModal} onHide={() => setModal(false)}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Add Bankpod</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form onSubmit={addBankpod}>
+                                <Form.Group>
+                                    <Form.Label>Bank Name</Form.Label>
+                                    <Form.Control type="text" value={bankName} onChange={(event) => setBankName(event.target.value)} placeholder="Enter bank name" required/>
+                                </Form.Group>
+                                <div style={{marginTop: '15px'}}>
+                                    <Button variant="primary" type="submit" >
+                                        Add
+                                    </Button>
+                                </div>
+                            </Form>
+                        </Modal.Body>
+                    </Modal>
+                </Card.Body>
+            </Card>
+        </Container> 
     )
 }

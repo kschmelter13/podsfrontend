@@ -2,6 +2,7 @@ import React from 'react'
 import { useRef, useState, useEffect} from "react";
 import { Col, Button, Row, Container, Card, Form } from 'react-bootstrap';
 import { supabase } from "../lib/api";
+import { Navigate } from 'react-router-dom';
 
 
 
@@ -11,6 +12,19 @@ const Login = ({handleUser, user}) => {
     const [loadingSignup, setLoadingSignup] = useState(false);
     const emailRef = useRef();
     const passwordRef = useRef();
+
+
+    useEffect(() => {
+        /* Recovery url is of the form
+         * <SITE_URL>#access_token=x&refresh_token=y&expires_in=z&token_type=bearer&type=recovery
+         * Read more on https://supabase.com/docs/reference/javascript/reset-password-email#notes
+         */
+        if (user) {
+            <Navigate to="/"/>
+        }
+
+    }, [user]);
+    
 
     const handleLogin = async (type) => {
         const email = emailRef.current?.value;
@@ -68,7 +82,7 @@ const Login = ({handleUser, user}) => {
         <div>
             <Container>
             <Row className="d-flex justify-content-center align-items-center" style={{ height: '100%',  minHeight: '87vh' }}>
-                <Col md={8} lg={6} xs={12}>
+                <Col md={7} lg={5} xs={8}>
                 <Card className="px-4">
                     <Card.Body>
                     <div className="mb-3 mt-md-4">
@@ -101,9 +115,9 @@ const Login = ({handleUser, user}) => {
                             ></Form.Group>
                             <div className="d-grid">
                             <div className="button-container" style={{ height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                <Button variant="primary" style={{ marginRight: '20px' }} type="button" onClick={() =>handleLogin("REGISTER").catch(console.error)}>{loadingSignup ? "Signing Up..." : "Create Account"}</Button>
+                                <Button variant="primary" style={{ marginRight: '20px' }} type="button" onClick={() =>handleLogin("REGISTER").catch(console.error)}>{loadingSignup ? "Signing Up..." : "Sign Up"}</Button>
                                 or
-                                <Button variant="primary" style={{ marginLeft: '20px' }} type="button" onClick={() =>handleLogin("LOGIN").catch(console.error)}>{loadingLogin ? "Logging In..." : "Login Account"}</Button>
+                                <Button variant="primary" style={{ marginLeft: '20px' }} type="button" onClick={() =>handleLogin("LOGIN").catch(console.error)}>{loadingLogin ? "Logging In..." : "Log In"}</Button>
                             </div>
                             </div>
                         </Form>
