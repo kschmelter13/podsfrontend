@@ -81,9 +81,9 @@ export default function Podsdash({user}) {
     ) : (
         <Container className='p-3' fluid style={{height: '100%',}}>
             <Card style={{ height: '100%',  minHeight: 'calc(96vh - 61px)' }}>
-                <div className="button-container" style={{ height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <div className="button-container" style={{ height: '50px', marginTop: '15px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     <Button variant="primary" onClick={() => setModal(true)}>Add Bankpod</Button>
-                    <Button variant="primary" onClick={handleLogout}>Log Out</Button>
+                    <Button variant="primary" style={{marginLeft: '30px'}} onClick={handleLogout}>Log Out</Button>
                 </div>
         
                 <Card.Body className="mx-auto justify-content-center align-items-center"f>

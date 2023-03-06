@@ -47,12 +47,9 @@ export default function App() {
       <div >
         <Header></Header>
         <div style={{marginTop: 'calc(30px + 3.9vh)'}}>
-        {loading 
-          ? <h1>Loading...</h1>
-          : <div >
-              {!user ? <Auth /> : <Podsdash loading={loading} setLoading={setLoading} user={user} />}
-            </div>
-        }     
+          <div >
+            {!user ? <Auth /> : <Podsdash loading={loading} setLoading={setLoading} user={user} />}
+          </div>
         </div>
       </div>
     </div>
