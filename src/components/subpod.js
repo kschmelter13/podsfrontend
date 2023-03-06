@@ -5,7 +5,7 @@ import { supabase } from '../lib/api';
 
 
 
-export default function Subpod({updatePodBalance, bankPod, subPod, setSubPods, subPods}) {
+export default function Subpod({ pods, setPods, bankPod, subPod, setSubPods, subPods}) {
   const [showDeleteModal, setDeleteModal] = useState(false)
   const [showAddModal, setAddModal] = useState(false)
   const [showSubtractModal, setSubtractModal] = useState(false)
@@ -43,6 +43,23 @@ export default function Subpod({updatePodBalance, bankPod, subPod, setSubPods, s
     }
     toggleDeleteModal(false)
     
+  }
+
+  const updatePodBalance = async (podId, newBalance) => {
+    const { data, error } = await supabase.from('BankPods').update({ balance: newBalance }).eq('id', podId).select();
+    if (error) {
+      console.error('Error updating bankpod: ', error);
+      return
+    } else {
+      console.log('Successfully updated bankpod: ', data[0]);
+
+      let newPod = data[0]
+
+      setPods(pods.map(pod1 => {
+        if (pod1.id === podId) return { ...pod1, balance: newBalance };
+        return pod1;
+      }))
+    }
   }
 
   const updateSubPodBalance = async (podId, newBalance) => {

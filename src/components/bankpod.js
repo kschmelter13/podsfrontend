@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Col, Button, Modal, Form, Card, ListGroup } from 'react-bootstrap';
 import { supabase } from '../lib/api';
 import Subpod from './subpod'
+import { FaSyncAlt } from 'react-icons/fa';
 
 
 export default function Bankpod({setLoading, bankPod, setPods, pods}) {
@@ -78,22 +79,82 @@ export default function Bankpod({setLoading, bankPod, setPods, pods}) {
     toggleDeleteModal()
   };
 
-  const updatePodBalance = async (podId, newBalance) => {
-    const { data, error } = await supabase.from('BankPods').update({ balance: newBalance }).eq('id', podId).select();
+  const updateAccountTotal = async (podId, newBalance) => {
+    const { data, error } = await supabase
+      .from('BankPods')
+      .update({ accountTotal: newBalance })
+      .eq('id', podId)
+      .select();
+  
     if (error) {
       console.error('Error updating bankpod: ', error);
-      return
-    } else {
-      console.log('Successfully updated bankpod: ', data[0]);
-
-      let newPod = data[0]
-
-      setPods(pods.map(pod1 => {
-        if (pod1.id === podId) return { ...pod1, balance: newBalance };
-        return pod1;
-      }))
+      return null;
     }
-  }
+  
+    console.log('Successfully updated bankpod: ', data[0]);
+    return data[0];
+  };
+  
+  const updatePodBalance = async (podId, newBalance) => {
+    const { data, error } = await supabase
+      .from('BankPods')
+      .update({ balance: newBalance })
+      .eq('id', podId)
+      .select();
+  
+    if (error) {
+      console.error('Error updating bankpod: ', error);
+      return null;
+    }
+  
+    console.log('Successfully updated bankpod: ', data[0]);
+    return data[0];
+  };
+  
+  const newTotal = async (event) => {
+    event.preventDefault();
+    const currentBalance = Number(bankPod.balance);
+  
+    // Get all the subpods associated with this bankpod
+    const { data: subpods, error } = await supabase
+      .from('SubPods')
+      .select('balance')
+      .eq('bankpod_id', bankPod.id)
+      .select();
+  
+    if (error) {
+      console.error('Error fetching subpods: ', error);
+      return;
+    }
+  
+    // Calculate the sum of all subpod balances
+    const subTotal = subpods.reduce((total, subpod) => total + Number(subpod.balance), 0);
+  
+    // Calculate the new total and available balance
+    const newTotal = Number(addAmount);
+    const newAvailable = newTotal - subTotal;
+  
+    // Update the bankpod's accountTotal and balance in the database
+    const updatedAccountTotal = await updateAccountTotal(bankPod.id, newTotal);
+    const updatedPodBalance = await updatePodBalance(bankPod.id, newAvailable);
+  
+    // Update the pods state with the updated data
+    if (updatedAccountTotal && updatedPodBalance) {
+      setPods(pods.map(pod => {
+        if (pod.id === bankPod.id) {
+          return {
+            ...pod,
+            accountTotal: updatedAccountTotal.accountTotal,
+            balance: updatedPodBalance.balance,
+          };
+        }
+        return pod;
+      }));
+    }
+  
+    setAddModal(false);
+    setAddAmount('');
+  };
 
   const addMoney = async (event) =>  {
     event.preventDefault()
@@ -139,21 +200,23 @@ export default function Bankpod({setLoading, bankPod, setPods, pods}) {
               <i className="fa fa-times" aria-hidden="true" style={{margin: 'auto', paddingTop: '.5px'}}></i>
             </Button>
           </div>
+          <h6 style={{marginTop: '8px'}}>Total:</h6>
           <div className="d-flex justify-content-between" style={{alignItems: 'center'}}>
-            <h4 style={{marginTop: '8px'}}>${bankPod.balance.toLocaleString(undefined, {minimumFractionDigits: 2})}</h4>
+            <h4>${bankPod.accountTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}</h4>
             <div style={{display: 'flex', justifyContent: 'flex-end', marginLeft: 'auto'}}>
-              <Button variant="secondary" style={{padding: '3px', height: '30px', width: '50px', marginRight: '10px'}} onClick={toggleAddModal}>
-                <i className="fa fa-plus" aria-hidden="true"></i>
-              </Button>
-              <Button variant="secondary" style={{padding: '3px', height: '30px', width: '50px'}} onClick={toggleSubtractModal}>
-                <i className="fa fa-minus" aria-hidden="true" ></i>
+              <Button variant="secondary"  style={{ height: '25px', marginBottom: '10px', paddingBottom: '20px'}}  onClick={toggleAddModal}>
+                <FaSyncAlt style={{ height: '15px', width: '15px', marginBottom: '20px'}}/>
               </Button>
             </div>
+          </div>
+          <h6 style={{marginTop: '8px'}}>Available:</h6>
+          <div className="d-flex justify-content-between" style={{alignItems: 'center'}}>
+            <h4>${bankPod.balance.toLocaleString(undefined, {minimumFractionDigits: 2})}</h4>
           </div>
         </div>
       </Card.Body>
         <ListGroup className="list-group-flush">
-          {subPods.map((subPod) => <Subpod updatePodBalance={updatePodBalance} bankPod={bankPod} subPod={subPod} subPods={subPods} setSubPods={setSubPods}/>)}
+          {subPods.map((subPod) => <Subpod pods={pods} setPods={setPods} bankPod={bankPod} subPod={subPod} subPods={subPods} setSubPods={setSubPods}/>)}
         </ListGroup>
       <ListGroup className="list-group-flush">
         <Button variant="primary" onClick={() => setSubModal(true)}>Add Subpod</Button>
@@ -176,35 +239,17 @@ export default function Bankpod({setLoading, bankPod, setPods, pods}) {
       </Modal>
       <Modal show={showAddModal} onHide={() => setAddModal(false)}>
           <Modal.Header closeButton>
-              <Modal.Title>Add Money</Modal.Title>
+              <Modal.Title>{bankPod.bankName}: Update Total Balance </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-              <Form onSubmit={addMoney}>
+              <Form onSubmit={newTotal}>
                   <Form.Group>
                       <Form.Label>Amount:</Form.Label>
                       <Form.Control pattern="^[0-9]*(\.[0-9]{0,2})?$" type="text" value={addAmount} onChange={(event) => setAddAmount(event.target.value)} placeholder="Enter dollar amount" required/>
                   </Form.Group>
                   <div style={{marginTop: '15px'}}>
                       <Button variant="primary" type="submit">
-                          Add
-                      </Button>
-                  </div>
-              </Form>
-          </Modal.Body>
-      </Modal>
-      <Modal show={showSubtractModal} onHide={() => setSubtractModal(false)}>
-          <Modal.Header closeButton>
-              <Modal.Title>Subtract Money</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-              <Form onSubmit={subtractMoney}>
-                  <Form.Group>
-                      <Form.Label>Amount:</Form.Label>
-                      <Form.Control pattern="^[0-9]*(\.[0-9]{0,2})?$" type="text" value={subtractAmount} onChange={(event) => setSubtractAmount(event.target.value)} placeholder="Enter dollar amount" required/>
-                  </Form.Group>
-                  <div style={{marginTop: '15px'}}>
-                      <Button variant="primary" type="submit">
-                          Subtract
+                          Update
                       </Button>
                   </div>
               </Form>
